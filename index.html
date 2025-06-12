@@ -45,11 +45,21 @@
 
     .hero {
       text-align: center;
-      padding: 3rem 1rem;
-      background: url('https://www.transparenttextures.com/patterns/stardust.png');
+      padding: 0;
+      position: relative;
+    }
+    #orbitCanvas {
+      width: 100%;
+      height: 60vh;
+      display: block;
+      background: radial-gradient(#14141f, #0d0d14);
     }
     .hero h2 {
-      margin-top: 2rem;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
       font-size: 1.8rem;
       color: #e0b3ff;
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
@@ -116,6 +126,7 @@
   </header>
 
   <section class="hero">
+    <canvas id="orbitCanvas"></canvas>
     <h2>A visual meditation on energy, chaos, and identity.</h2>
   </section>
 
@@ -142,5 +153,47 @@
     <p>Connect with the artist: @LabMD28 on Twitter & Instagram</p>
     <p>&copy; 2025 LabMD28. All rights reserved.</p>
   </footer>
+  <script>
+    const canvas = document.getElementById('orbitCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight * 0.6;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const orbits = Array.from({ length: 5 }, (_, i) => ({
+      radius: 60 + i * 30,
+      angle: Math.random() * Math.PI * 2,
+      speed: 0.005 + Math.random() * 0.01,
+      color: `hsl(${Math.random() * 360}, 80%, 60%)`
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      orbits.forEach(o => {
+        ctx.beginPath();
+        ctx.arc(0, 0, o.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        const x = Math.cos(o.angle) * o.radius;
+        const y = Math.sin(o.angle) * o.radius;
+        ctx.fillStyle = o.color;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        o.angle += o.speed;
+      });
+      ctx.restore();
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
 </body>
 </html>
